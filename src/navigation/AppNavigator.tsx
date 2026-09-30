@@ -1,20 +1,18 @@
-
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from '../screens/LoginScreen';
-
-const Stack = createNativeStackNavigator();
+import React, { useState } from 'react';
+import MainNavigator from './MainNavigator';
+import AuthNavigator from './AuthNavigator';
 
 const AppNavigator = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-      />
-    </Stack.Navigator>
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  return isLoggedIn ? (
+    <MainNavigator />
+  ) : (
+    <AuthNavigator onLogin={handleLogin} />
   );
 };
 
 export default AppNavigator;
-

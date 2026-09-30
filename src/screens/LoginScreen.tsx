@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Image,
@@ -9,28 +8,20 @@ import {
   Pressable,
 } from 'react-native';
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation, onLogin }: any) => {
   return (
     <View style={styles.container}>
-
       <Image
         source={require('../../assets/PdfHubAdroit.png')}
         style={styles.logo}
       />
 
       <View style={styles.card}>
+        <Text style={styles.heading}>Login</Text>
 
-        <Text style={styles.heading}>
-          Login
-        </Text>
+        <Text style={styles.subheading}>Please login to continue</Text>
 
-        <Text style={styles.subheading}>
-          Please sign in to continue
-        </Text>
-
-        <Text style={styles.label}>
-          Email
-        </Text>
+        <Text style={styles.label}>Email</Text>
 
         <TextInput
           style={styles.input}
@@ -39,9 +30,7 @@ const LoginScreen = () => {
           keyboardType="email-address"
         />
 
-        <Text style={styles.label}>
-          Password
-        </Text>
+        <Text style={styles.label}>Password</Text>
 
         <TextInput
           style={styles.input}
@@ -52,30 +41,26 @@ const LoginScreen = () => {
 
         <Pressable
           style={styles.button}
-          onPress={() => console.log('Login pressed')}
+          onPress={onLogin}
         >
-          <Text style={styles.buttonText}>
-            Get OTP
-          </Text>
+          <Text style={styles.buttonText}>Login</Text>
         </Pressable>
-
-        <Text style={styles.signupText}>
-          Don't have an account?{' '}
-
-          <Text style={styles.signup}>
-            Sign Up
-          </Text>
-        </Text>
-
       </View>
 
+      <View style={styles.signupText}>
+        <Text style={styles.signupNormal}>Don't have an account? </Text>
+
+        <Pressable onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.signup}>Sign Up</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.85,
     backgroundColor: '#f5f6fa',
     justifyContent: 'center',
     padding: 20,
@@ -155,7 +140,12 @@ const styles = StyleSheet.create({
 
   signupText: {
     marginTop: 20,
-    textAlign: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  signupNormal: {
     color: '#666',
     fontSize: 13,
   },
@@ -163,6 +153,7 @@ const styles = StyleSheet.create({
   signup: {
     color: '#383B7D',
     fontWeight: 'bold',
+    fontSize: 13,
   },
 });
 
