@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const ProfileScreen = () => {
+const MtfScreen  = () => {
   return (
     <View>
-      <Text>mtf Screen</Text>
+      <Text>MTF Screen</Text>
     </View>
   );
 };
-export default ProfileScreen;
+export default MtfScreen ;

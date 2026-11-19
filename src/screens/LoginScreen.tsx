@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { BASE_URL } from '../utils/constants';
 import {
   Image,
   StyleSheet,
@@ -6,154 +8,235 @@ import {
   Text,
   View,
   Pressable,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 
-const LoginScreen = ({ navigation, onLogin }: any) => {
+const LoginScreen = ({ navigation }: any) => {
+  const [client, setClient] = useState('');
+  const [pan, setPan] = useState('');
+  const [number, setNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    const cleanClient = client; //.trim();
+    const cleanPan = pan; //.trim().toUpperCase();
+    const cleanNumber = number; //.trim();
+
+    try {
+      setLoading(true);
+      const payload = {
+        client_id: cleanClient,
+        pan: cleanPan,
+        phone_number: cleanNumber,
+      };
+
+      const response = await axios.post(
+        BASE_URL + 'api/v1/auth/send-otp/',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      console.log('OTP SENT SUCCESSFULLY:', response.data);
+    } catch (error: any) {
+      console.log('FULL ERROR:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../../assets/PdfHubAdroit.png')}
-        style={styles.logo}
-      />
+    <KeyboardAvoidingView
+      style={styles.flex}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.card}>
+          <Image
+            source={require('../../assets/PdfHubAdroit.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
-      <View style={styles.card}>
-        <Text style={styles.heading}>Login</Text>
+          <Text style={styles.heading}>IPO Login</Text>
 
-        <Text style={styles.subheading}>Please login to continue</Text>
+          <Text style={styles.label}>Adroit Trading Code (UCC)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Client ID"
+            value={client}
+            onChangeText={setClient}
+            placeholderTextColor="#8A8FA3"
+            autoCapitalize="characters"
+          />
 
-        <Text style={styles.label}>Email</Text>
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-        />
+          <Text style={styles.label}>PAN (for Non-Adroit users)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="ABCDE1234F"
+            value={pan}
+            onChangeText={setPan}
+            placeholderTextColor="#8A8FA3"
+            autoCapitalize="characters"
+            maxLength={10}
+          />
 
-        <Text style={styles.label}>Password</Text>
+          <Text style={[styles.label, styles.labelSpaced]}>Mobile Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="10-digit Mobile Number"
+            value={number}
+            onChangeText={setNumber}
+            placeholderTextColor="#8A8FA3"
+            keyboardType="phone-pad"
+            maxLength={10}
+          />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          placeholderTextColor="#999"
-          secureTextEntry
-        />
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              (pressed || loading) && styles.buttonPressed,
+            ]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Send OTP</Text>
+            )}
+          </Pressable>
 
-        <Pressable
-          style={styles.button}
-          onPress={onLogin}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.signupText}>
-        <Text style={styles.signupNormal}>Don't have an account? </Text>
-
-        <Pressable onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.signup}>Sign Up</Text>
-        </Pressable>
-      </View>
-    </View>
+          <Text style={styles.footer}>
+            © 2025 IPO Portal. All rights reserved.
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 0.85,
-    backgroundColor: '#f5f6fa',
-    justifyContent: 'center',
-    padding: 20,
+  flex: {
+    flex: 1,
+    backgroundColor: '#EEF1F9',
   },
 
-  logo: {
-    alignSelf: 'center',
-    marginBottom: 35,
+  scroll: {
+    flexGrow: 0.5,
+    justifyContent: 'center',
+    padding: 16,
   },
 
   card: {
     width: '100%',
-    padding: 25,
+    paddingHorizontal: 22,
+    paddingTop: 20,
+    paddingBottom: 18,
     backgroundColor: '#fff',
-    borderRadius: 15,
-    borderColor: '#383B7D',
-    borderWidth: 1,
-    shadowColor: '#110C2E',
-    shadowOffset: {
-      width: 0,
-      height: 20,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 30,
-    elevation: 10,
+    borderRadius: 22,
+    shadowColor: '#1F2B7B',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+
+  logo: {
+    alignSelf: 'center',
+    width: 120,
+    height: 90,
+    // marginBottom: 8,
   },
 
   heading: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#111',
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1F2B7B',
     textAlign: 'center',
-  },
-
-  subheading: {
-    marginTop: 10,
-    marginBottom: 20,
-    fontSize: 15,
-    color: '#666',
-    textAlign: 'center',
+    marginBottom: 22,
   },
 
   label: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginTop: 10,
+    color: '#1F2B7B',
+    marginBottom: 8,
+  },
+
+  labelSpaced: {
+    marginTop: 16,
   },
 
   input: {
-    height: 45,
-    marginTop: 5,
+    height: 52,
     borderWidth: 1,
-    borderColor: '#383B7D',
-    borderRadius: 10,
-    paddingHorizontal: 15,
+    borderColor: '#D5DAEA',
+    borderRadius: 12,
+    paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: '#fff',
+    color: '#111',
+    backgroundColor: '#F5F7FC',
+  },
+
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#DDE1EE',
+  },
+
+  dividerText: {
+    marginHorizontal: 12,
+    fontSize: 13,
+    color: '#6B7084',
   },
 
   button: {
-    height: 45,
-    marginTop: 20,
-    borderWidth: 1,
-    backgroundColor: '#383B7D',
-    borderRadius: 15,
-    borderColor: '#ffffff',
+    height: 52,
+    marginTop: 26,
+    backgroundColor: '#0046C0',
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  buttonPressed: {
+    opacity: 0.8,
   },
 
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
 
-  signupText: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  signupNormal: {
-    color: '#666',
-    fontSize: 13,
-  },
-
-  signup: {
-    color: '#383B7D',
-    fontWeight: 'bold',
-    fontSize: 13,
+  footer: {
+    marginTop: 18,
+    fontSize: 12,
+    color: '#6B7084',
+    textAlign: 'center',
   },
 });
 

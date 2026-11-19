@@ -4,7 +4,7 @@ import { View, Text, Button } from 'react-native';
 const ProfileScreen = () => {
   return (
     <View>
-      <Text>profile Screen</Text>
+      <Text>Profile Screen</Text>
     </View>
   );
 };

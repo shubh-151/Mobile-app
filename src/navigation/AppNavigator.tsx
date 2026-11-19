@@ -5,7 +5,7 @@ import AuthNavigator from './AuthNavigator';
 const AppNavigator = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const handleLogin = () => {
-    setIsLoggedIn(true);
+    setIsLoggedIn(false);
   };
 
   return isLoggedIn ? (
